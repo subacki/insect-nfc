@@ -62,7 +62,7 @@
             align-items: center;
             gap: 3px;
             touch-action: manipulation;
-            position: relative; /* [추가] 드롭다운 메뉴의 기준점 */
+            position: relative; /* 드롭다운 메뉴 위치 기준점 */
         }
 
         .menu-btn span {
@@ -72,11 +72,11 @@
             border-radius: 1px;
         }
 
-        /* --- [추가된 부분] 드롭다운 메뉴 스타일 --- */
+        /* --- [추가된 부분] 메뉴 버튼 드롭다운 스타일 --- */
         .dropdown-menu {
-            display: none;
+            display: none; /* 평소에는 숨김 */
             position: absolute;
-            top: 42px;
+            top: 42px; /* 버튼 바로 아래 */
             right: 0;
             background-color: white;
             border-radius: 8px;
@@ -86,16 +86,20 @@
             overflow: hidden;
             border: 1px solid #eee;
         }
+
         .dropdown-menu a {
             display: block;
             padding: 10px 15px;
             text-decoration: none;
             color: #2c3e50;
             font-size: 13px;
+            font-weight: 500;
         }
+
         .dropdown-menu a:hover {
             background-color: #f8f9fa;
         }
+
         .dropdown-menu a.logout {
             color: #e74c3c;
         }
@@ -128,15 +132,9 @@
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-8px);
-            }
-            60% {
-                transform: translateY(-4px);
-            }
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
         }
 
         .stats-section {
@@ -185,6 +183,8 @@
             overflow: hidden;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            color: inherit; /* 링크 색상 상속 */
         }
 
         .card:active {
@@ -264,176 +264,7 @@
             cursor: pointer;
             box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
             animation: float 3s ease-in-out infinite;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
             z-index: 1000;
-        }
-
-        .floating-bug:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-
-        /* 모바일 전용 스타일 */
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                max-width: 100%;
-            }
-            
-            .header {
-                padding: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .header h1 {
-                font-size: 18px;
-            }
-            
-            .welcome-section {
-                padding: 18px;
-                margin-bottom: 15px;
-            }
-            
-            .welcome-text h2 {
-                font-size: 16px;
-            }
-            
-            .welcome-text p {
-                font-size: 12px;
-            }
-            
-            .stats-section {
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-            
-            .stat-card {
-                padding: 12px 8px;
-            }
-            
-            .stat-number {
-                font-size: 20px;
-            }
-            
-            .stat-label {
-                font-size: 10px;
-            }
-            
-            .dashboard-grid {
-                gap: 12px;
-                margin-bottom: 70px;
-            }
-            
-            .card {
-                padding: 18px 15px;
-            }
-            
-            .card-icon {
-                width: 45px;
-                height: 45px;
-                margin-bottom: 10px;
-            }
-            
-            .card h3 {
-                font-size: 13px;
-                margin-bottom: 5px;
-            }
-            
-            .card p {
-                font-size: 10px;
-            }
-            
-            .floating-bug {
-                width: 45px;
-                height: 45px;
-                bottom: 15px;
-                right: 15px;
-                font-size: 16px;
-            }
-        }
-
-        /* 아주 작은 화면 (320px 이하) */
-        @media (max-width: 320px) {
-            .header h1 {
-                font-size: 16px;
-            }
-            
-            .welcome-text h2 {
-                font-size: 15px;
-            }
-            
-            .dashboard-grid {
-                gap: 10px;
-            }
-            
-            .card {
-                padding: 15px 12px;
-            }
-            
-            .card-icon {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .card h3 {
-                font-size: 12px;
-            }
-            
-            .card p {
-                font-size: 9px;
-            }
-        }
-
-        /* 터치 피드백 개선 */
-        .card:hover {
-            transform: none;
-        }
-
-        .card:focus {
-            outline: 2px solid #667eea;
-            outline-offset: 2px;
-        }
-
-        /* 로딩 상태 */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        /* 다크모드 대응 (시스템 설정 기반) */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            }
-            
-            .header, .welcome-section, .stat-card, .card {
-                background: #2c3e50;
-                color: white;
-            }
-            
-            .header h1, .welcome-text h2, .card h3, .stat-number {
-                color: white;
-            }
-            
-            .header .subtitle, .welcome-text p, .card p, .stat-label {
-                color: #bdc3c7;
-            }
-            
-            .menu-btn {
-                background: #34495e;
-            }
-            
-            .menu-btn span {
-                background: white;
-            }
         }
     </style>
 </head>
@@ -527,24 +358,31 @@
     <div class="floating-bug" onclick="showHelp()">?</div>
 
     <script>
-        // --- [추가된 부분] 메뉴 버튼 기능 구현 ---
+        // --- [추가된 부분] 메뉴 버튼 동작을 위한 Javascript ---
         const menuBtn = document.getElementById('menuBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
         menuBtn.addEventListener('click', (event) => {
+            // 클릭 이벤트가 다른 곳으로 퍼지는 것을 막음 (버블링 방지)
             event.stopPropagation();
+            // 드롭다운 메뉴를 보이거나 숨김
             dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
         });
 
+        // 페이지의 다른 곳을 클릭하면 메뉴가 닫히도록 설정
         document.addEventListener('click', (event) => {
+            // 클릭된 곳이 메뉴 버튼의 일부가 아닐 때만 메뉴를 닫음
             if (!menuBtn.contains(event.target)) {
                 dropdownMenu.style.display = 'none';
             }
         });
 
-        // --- 기존 스크립트 (원본과 동일) ---
+        // --- 기존 스크립트 함수들 (원본과 동일) ---
         function learnAbout(insect) {
+            // 로딩 상태 표시
             document.body.classList.add('loading');
+            
+            // 실제 곤충 상세 페이지로 이동
             setTimeout(() => {
                 window.location.href = `/insect/${insect}`;
             }, 100);
@@ -558,6 +396,7 @@
             alert('도움이 필요하시면 언제든 문의하세요!');
         }
 
+        // --- 기존 이벤트 리스너들 (원본과 동일) ---
         document.addEventListener('touchstart', function() {}, {passive: true});
         document.addEventListener('touchmove', function() {}, {passive: true});
 

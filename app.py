@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # --- 설정 ---
 app.config['SECRET_KEY'] = 'a_very_secret_and_complex_key_for_session'
-# ⚠️ 최종 확인했던 본인의 DB 정보로 설정해주세요.
+# ⚠️ 이전에 최종 확인했던 본인의 DB 정보로 설정해주세요.
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:qnsker@localhost:3307/bug_project'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -34,7 +34,7 @@ class LearningProgress(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- 곤충 데이터 ---
+# --- 수정된 곤충 데이터 ---
 insects = {
     "bee": {"name": "꿀벌", "description": "윙윙~ 나는야 꿀벌! 꽃을 찾아다니며 달콤한 꿀을 모으는 작은 요리사란다. 꽃들에게 꽃가루를 옮겨주며 열매를 맺게 도와주는 아주 중요한 친구이기도 해. 하지만 깜짝 놀라게 하면 침으로 콕! 쏠 수 있으니 조심해야 해!", "image": "bee.jpg"},
     "larva": {"name": "애벌레", "description": "꿈틀꿈틀, 나는 애벌레야! 지금은 작고 통통하지만, 나뭇잎을 아주 많이 먹고 나면 곧 멋진 나비나 나방으로 변신할 준비를 한단다. 나의 변신 과정을 지켜봐 줄래? 정말 신기할 거야!", "image": "larva.jpg"},
@@ -43,35 +43,36 @@ insects = {
     "butterfly": {"name": "나비", "description": "하늘하늘, 나는 꽃의 친구 나비야! 활짝 편 날개에는 아름다운 그림이 그려져 있어. 애벌레 시절을 거쳐 번데기 안에서 참고 기다리면, 이렇게 멋진 날개를 가진 어른 나비로 다시 태어난단다. 꽃밭에서 춤추는 나를 찾아봐!", "image": "butterfly.jpg"},
 }
 
-# --- 라우팅 ---
+# --- 라우팅 (페이지 주소) ---
 @app.route("/")
 def home():
     stats = {}
-    # 로그인 상태를 boolean 값으로 템플릿에 전달
-    is_authenticated = current_user.is_authenticated
-    
-    if is_authenticated:
+    if current_user.is_authenticated:
+        # 로그인 시, 실제 학습 데이터를 계산
         completed_set = set(filter(None, current_user.progress.completed_lessons.split(',')))
         stats['total_insects'] = len(insects)
         stats['completed_count'] = len(completed_set)
         stats['progress_percentage'] = int((len(completed_set) / len(insects)) * 100) if insects else 0
         
-    return render_template("index.html", stats=stats, is_authenticated=is_authenticated)
+    return render_template("index.html", stats=stats)
 
-# ... 나머지 insect_info, login, register, logout 라우트는 이전과 동일합니다 ...
 @app.route("/insect/<insect_name>")
 def insect_info(insect_name):
     if insect_name not in insects:
         return "해당 곤충을 찾을 수 없습니다.", 404
+
     if current_user.is_authenticated:
+        # 로그인 상태라면 학습 진행률 업데이트
         progress = current_user.progress
         completed_set = set(filter(None, progress.completed_lessons.split(',')))
         if insect_name not in completed_set:
             completed_set.add(insect_name)
             progress.completed_lessons = ','.join(sorted(list(completed_set)))
             db.session.commit()
+
     return render_template("insect.html", insect=insects[insect_name])
 
+# --- 회원 기능 라우팅 ---
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
