@@ -62,6 +62,7 @@
             align-items: center;
             gap: 3px;
             touch-action: manipulation;
+            position: relative; /* [추가] 드롭다운 메뉴의 기준점 */
         }
 
         .menu-btn span {
@@ -69,6 +70,34 @@
             height: 2px;
             background: #2c3e50;
             border-radius: 1px;
+        }
+
+        /* --- [추가된 부분] 드롭다운 메뉴 스타일 --- */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 42px;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 120px;
+            z-index: 100;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 13px;
+        }
+        .dropdown-menu a:hover {
+            background-color: #f8f9fa;
+        }
+        .dropdown-menu a.logout {
+            color: #e74c3c;
         }
 
         .welcome-section {
@@ -410,20 +439,32 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div>
                 <h1>벌레의 세계</h1>
-                <div class="subtitle">오늘도 함께 배워봐요!</div>
+                <div class="subtitle">
+                    {% if current_user.is_authenticated %}
+                        {{ current_user.username }}님, 환영합니다!
+                    {% else %}
+                        오늘도 함께 배워봐요!
+                    {% endif %}
+                </div>
             </div>
-            <button class="menu-btn">
+            <button class="menu-btn" id="menuBtn">
                 <span></span>
                 <span></span>
                 <span></span>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('logout') }}" class="logout">로그아웃</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}">로그인</a>
+                        <a href="{{ url_for('register') }}">회원가입</a>
+                    {% endif %}
+                </div>
             </button>
         </div>
 
-        <!-- Welcome Section -->
         <div class="welcome-section">
             <div class="welcome-text">
                 <h2>오늘의 학습 목표</h2>
@@ -432,54 +473,49 @@
             <div class="welcome-icon">🐛</div>
         </div>
 
-        <!-- Stats Section -->
+        {% if current_user.is_authenticated %}
         <div class="stats-section">
             <div class="stat-card">
-                <div class="stat-number">5</div>
+                <div class="stat-number">{{ stats.total_insects }}</div>
                 <div class="stat-label">학습 가능한<br>곤충</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">12</div>
+                <div class="stat-number">{{ stats.completed_count }}</div>
                 <div class="stat-label">완료한<br>학습</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">85%</div>
+                <div class="stat-number">{{ stats.progress_percentage }}%</div>
                 <div class="stat-label">학습<br>진행률</div>
             </div>
         </div>
+        {% endif %}
 
-        <!-- Main Dashboard Grid -->
         <div class="dashboard-grid">
             <div class="card bee" onclick="learnAbout('bee')">
                 <div class="card-icon"></div>
                 <h3>꿀벌 배우기</h3>
                 <p>꿀벌의 생활과 꿀을 만드는 과정을 알아보세요</p>
             </div>
-
             <div class="card butterfly" onclick="learnAbout('butterfly')">
                 <div class="card-icon"></div>
                 <h3>나비 관찰하기</h3>
                 <p>아름다운 나비의 변화 과정을 살펴보세요</p>
             </div>
-
             <div class="card ladybug" onclick="learnAbout('ladybug')">
                 <div class="card-icon"></div>
                 <h3>무당벌레 탐구</h3>
                 <p>작지만 특별한 무당벌레의 세계를 만나보세요</p>
             </div>
-
             <div class="card larva" onclick="learnAbout('larva')">
                 <div class="card-icon"></div>
                 <h3>애벌레 성장기</h3>
                 <p>애벌레가 어른 벌레로 자라는 모습을 관찰해요</p>
             </div>
-
             <div class="card mosquito" onclick="learnAbout('mosquito')">
                 <div class="card-icon"></div>
                 <h3>모기의 비밀</h3>
                 <p>모기의 생활 습성과 특징을 알아보세요</p>
             </div>
-
             <div class="card practice" onclick="startQuiz()">
                 <div class="card-icon">🎯</div>
                 <h3>학습 퀴즈</h3>
@@ -488,15 +524,27 @@
         </div>
     </div>
 
-    <!-- Floating Action Button -->
     <div class="floating-bug" onclick="showHelp()">?</div>
 
     <script>
+        // --- [추가된 부분] 메뉴 버튼 기능 구현 ---
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        menuBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!menuBtn.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+
+        // --- 기존 스크립트 (원본과 동일) ---
         function learnAbout(insect) {
-            // 로딩 상태 표시
             document.body.classList.add('loading');
-            
-            // 실제 곤충 상세 페이지로 이동
             setTimeout(() => {
                 window.location.href = `/insect/${insect}`;
             }, 100);
@@ -504,18 +552,15 @@
 
         function startQuiz() {
             alert('퀴즈를 시작합니다!');
-            // 실제 구현에서는 퀴즈 페이지로 라우팅
         }
 
         function showHelp() {
             alert('도움이 필요하시면 언제든 문의하세요!');
         }
 
-        // 터치 이벤트 최적화
         document.addEventListener('touchstart', function() {}, {passive: true});
         document.addEventListener('touchmove', function() {}, {passive: true});
 
-        // 카드 터치 피드백
         document.querySelectorAll('.card').forEach(card => {
             let touchTimeout;
             
@@ -535,7 +580,6 @@
             });
         });
 
-        // 플로팅 버튼 터치 피드백
         document.querySelector('.floating-bug').addEventListener('touchstart', function() {
             this.style.transform = 'scale(0.95)';
         });
@@ -546,7 +590,6 @@
             }, 150);
         });
 
-        // 페이지 로드 시 애니메이션
         window.addEventListener('load', function() {
             document.querySelectorAll('.card').forEach((card, index) => {
                 card.style.opacity = '0';

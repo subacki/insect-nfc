@@ -395,7 +395,6 @@
 </head>
 <body>
     <div class="container fade-in">
-        <!-- Header -->
         <div class="header">
             <a href="/" class="back-btn">
                 <span>🏠</span>
@@ -404,7 +403,6 @@
             <div class="header-title">벌레의 세계</div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <h1 class="insect-title">{{ insect.name }}</h1>
             
@@ -432,11 +430,10 @@
             </div>
         </div>
 
-        <!-- Fun Facts Section -->
         <div class="fun-facts">
             <h3>재미있는 사실들 ✨</h3>
             
-            {% if 'bee' in request.endpoint or '벌' in insect.name %}
+            {% if 'bee' in request.path or '벌' in insect.name %}
             <div class="fact-item">
                 <div class="fact-icon">🍯</div>
                 <div>꿀벌 한 마리가 평생 만드는 꿀은 티스푼 1/12 정도예요!</div>
@@ -445,7 +442,7 @@
                 <div class="fact-icon">💃</div>
                 <div>꿀벌은 춤으로 동료들에게 꽃의 위치를 알려줍니다.</div>
             </div>
-            {% elif 'butterfly' in request.endpoint or '나비' in insect.name %}
+            {% elif 'butterfly' in request.path or '나비' in insect.name %}
             <div class="fact-item">
                 <div class="fact-icon">🌈</div>
                 <div>나비는 사람보다 더 많은 색깔을 볼 수 있어요!</div>
@@ -454,7 +451,7 @@
                 <div class="fact-icon">👃</div>
                 <div>나비는 발로 맛을 느낄 수 있습니다.</div>
             </div>
-            {% elif 'ladybug' in request.endpoint or '무당벌레' in insect.name %}
+            {% elif 'ladybug' in request.path or '무당벌레' in insect.name %}
             <div class="fact-item">
                 <div class="fact-icon">🔢</div>
                 <div>무당벌레의 점 개수는 나이가 아니라 종류를 나타내요!</div>
@@ -463,7 +460,7 @@
                 <div class="fact-icon">🦸</div>
                 <div>무당벌레 한 마리는 하루에 진딧물 50마리를 잡아먹어요.</div>
             </div>
-            {% elif 'larva' in request.endpoint or '애벌레' in insect.name %}
+            {% elif 'larva' in request.path or '애벌레' in insect.name %}
             <div class="fact-item">
                 <div class="fact-icon">🍽️</div>
                 <div>애벌레는 자신의 몸무게보다 많은 음식을 먹을 수 있어요!</div>
@@ -472,7 +469,7 @@
                 <div class="fact-icon">🔄</div>
                 <div>완전변태를 하는 곤충의 70%가 애벌레 단계를 거칩니다.</div>
             </div>
-            {% elif 'mosquito' in request.endpoint or '모기' in insect.name %}
+            {% elif 'mosquito' in request.path or '모기' in insect.name %}
             <div class="fact-item">
                 <div class="fact-icon">👂</div>
                 <div>모기는 날개짓 소리로 서로를 찾아요!</div>
@@ -494,7 +491,6 @@
         </div>
     </div>
 
-    <!-- Floating Home Button -->
     <a href="/" class="floating-home">🏠</a>
 
     <script>
