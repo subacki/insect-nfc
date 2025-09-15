@@ -2,15 +2,563 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>곤충 정보</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>벌레 학습 대시보드</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background-color: #f0f8ff; }
-        h1 { color: #2e7d32; }
-        p { font-size: 1.2em; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #e8e5ff 0%, #f0f4ff 100%);
+            min-height: 100vh;
+            padding: 15px;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .menu-btn {
+            width: 35px;
+            height: 35px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            touch-action: manipulation;
+        }
+
+        .menu-btn span {
+            width: 18px;
+            height: 2px;
+            background: #2c3e50;
+            border-radius: 1px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .welcome-text h2 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .welcome-text p {
+            color: #7f8c8d;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .welcome-icon {
+            font-size: 40px;
+            margin-top: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-8px);
+            }
+            60% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 80px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .card.bee::before { background: #ff6b6b; }
+        .card.butterfly::before { background: #4ecdc4; }
+        .card.ladybug::before { background: #45b7d1; }
+        .card.larva::before { background: #96ceb4; }
+        .card.mosquito::before { background: #ffeaa7; }
+        .card.practice::before { background: #a29bfe; }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .card.bee .card-icon { background-image: url('/static/images/bee.jpg'); }
+        .card.butterfly .card-icon { background-image: url('/static/images/butterfly.jpg'); }
+        .card.ladybug .card-icon { background-image: url('/static/images/ladybug.jpg'); }
+        .card.larva .card-icon { background-image: url('/static/images/larva.jpg'); }
+        .card.mosquito .card-icon { background-image: url('/static/images/mosquito.jpg'); }
+
+        .card.practice .card-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 20px;
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            font-size: 11px;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        .floating-bug {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+            animation: float 3s ease-in-out infinite;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            z-index: 1000;
+        }
+
+        .floating-bug:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* 모바일 전용 스타일 */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .header {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .welcome-section {
+                padding: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .welcome-text h2 {
+                font-size: 16px;
+            }
+            
+            .welcome-text p {
+                font-size: 12px;
+            }
+            
+            .stats-section {
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-card {
+                padding: 12px 8px;
+            }
+            
+            .stat-number {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+            
+            .dashboard-grid {
+                gap: 12px;
+                margin-bottom: 70px;
+            }
+            
+            .card {
+                padding: 18px 15px;
+            }
+            
+            .card-icon {
+                width: 45px;
+                height: 45px;
+                margin-bottom: 10px;
+            }
+            
+            .card h3 {
+                font-size: 13px;
+                margin-bottom: 5px;
+            }
+            
+            .card p {
+                font-size: 10px;
+            }
+            
+            .floating-bug {
+                width: 45px;
+                height: 45px;
+                bottom: 15px;
+                right: 15px;
+                font-size: 16px;
+            }
+        }
+
+        /* 아주 작은 화면 (320px 이하) */
+        @media (max-width: 320px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            
+            .welcome-text h2 {
+                font-size: 15px;
+            }
+            
+            .dashboard-grid {
+                gap: 10px;
+            }
+            
+            .card {
+                padding: 15px 12px;
+            }
+            
+            .card-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .card h3 {
+                font-size: 12px;
+            }
+            
+            .card p {
+                font-size: 9px;
+            }
+        }
+
+        /* 터치 피드백 개선 */
+        .card:hover {
+            transform: none;
+        }
+
+        .card:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* 다크모드 대응 (시스템 설정 기반) */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            }
+            
+            .header, .welcome-section, .stat-card, .card {
+                background: #2c3e50;
+                color: white;
+            }
+            
+            .header h1, .welcome-text h2, .card h3, .stat-number {
+                color: white;
+            }
+            
+            .header .subtitle, .welcome-text p, .card p, .stat-label {
+                color: #bdc3c7;
+            }
+            
+            .menu-btn {
+                background: #34495e;
+            }
+            
+            .menu-btn span {
+                background: white;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>곤충 정보 웹페이지</h1>
-    <p>NFC 태그를 스캔하여 곤충 정보를 확인하세요!</p>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>벌레의 세계</h1>
+                <div class="subtitle">오늘도 함께 배워봐요!</div>
+            </div>
+            <button class="menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-text">
+                <h2>오늘의 학습 목표</h2>
+                <p>다양한 벌레들을 관찰하고<br>특징을 배워보세요</p>
+            </div>
+            <div class="welcome-icon">🐛</div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">학습 가능한<br>곤충</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">완료한<br>학습</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">85%</div>
+                <div class="stat-label">학습<br>진행률</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <div class="card bee" onclick="learnAbout('bee')">
+                <div class="card-icon"></div>
+                <h3>꿀벌 배우기</h3>
+                <p>꿀벌의 생활과 꿀을 만드는 과정을 알아보세요</p>
+            </div>
+
+            <div class="card butterfly" onclick="learnAbout('butterfly')">
+                <div class="card-icon"></div>
+                <h3>나비 관찰하기</h3>
+                <p>아름다운 나비의 변화 과정을 살펴보세요</p>
+            </div>
+
+            <div class="card ladybug" onclick="learnAbout('ladybug')">
+                <div class="card-icon"></div>
+                <h3>무당벌레 탐구</h3>
+                <p>작지만 특별한 무당벌레의 세계를 만나보세요</p>
+            </div>
+
+            <div class="card larva" onclick="learnAbout('larva')">
+                <div class="card-icon"></div>
+                <h3>애벌레 성장기</h3>
+                <p>애벌레가 어른 벌레로 자라는 모습을 관찰해요</p>
+            </div>
+
+            <div class="card mosquito" onclick="learnAbout('mosquito')">
+                <div class="card-icon"></div>
+                <h3>모기의 비밀</h3>
+                <p>모기의 생활 습성과 특징을 알아보세요</p>
+            </div>
+
+            <div class="card practice" onclick="startQuiz()">
+                <div class="card-icon">🎯</div>
+                <h3>학습 퀴즈</h3>
+                <p>배운 내용을 재미있는 퀴즈로 확인해보세요</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="floating-bug" onclick="showHelp()">?</div>
+
+    <script>
+        function learnAbout(insect) {
+            // 로딩 상태 표시
+            document.body.classList.add('loading');
+            
+            // 실제 곤충 상세 페이지로 이동
+            setTimeout(() => {
+                window.location.href = `/insect/${insect}`;
+            }, 100);
+        }
+
+        function startQuiz() {
+            alert('퀴즈를 시작합니다!');
+            // 실제 구현에서는 퀴즈 페이지로 라우팅
+        }
+
+        function showHelp() {
+            alert('도움이 필요하시면 언제든 문의하세요!');
+        }
+
+        // 터치 이벤트 최적화
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        document.addEventListener('touchmove', function() {}, {passive: true});
+
+        // 카드 터치 피드백
+        document.querySelectorAll('.card').forEach(card => {
+            let touchTimeout;
+            
+            card.addEventListener('touchstart', function() {
+                clearTimeout(touchTimeout);
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                touchTimeout = setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+            
+            card.addEventListener('touchcancel', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // 플로팅 버튼 터치 피드백
+        document.querySelector('.floating-bug').addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        document.querySelector('.floating-bug').addEventListener('touchend', function() {
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // 페이지 로드 시 애니메이션
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
 </html>
